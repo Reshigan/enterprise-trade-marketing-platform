@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanta X-Trade Spend | Level 5 Enterprise TPM</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1e3a8a">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Flatpickr for date pickers -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <!-- AG-Grid for advanced tables -->
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/styles/ag-theme-alpine.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #1e2a5a;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --success: #22c55e;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Advanced gradient backgrounds */
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Glass morphism effects */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Advanced brand logo */
+        .brand-logo {
+            width: 200px;
+            height: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .brand-logo::before {
+            content: 'VANTA X';
+            position: absolute;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+        
+        .brand-logo::after {
+            content: 'TRADE SPEND';
+            position: absolute;
+            bottom: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 2px;
+        }
+        
+        /* Loading animations */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Advanced card effects */
+        .metric-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease;
+        }
+        
+        .metric-card:hover::before {
+            transform: scale(1);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Activity grid styles */
+        .activity-cell {
+            position: relative;
+            min-height: 60px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .activity-cell:hover {
+            background-color: #f9fafb;
+            border-color: #3b82f6;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .activity-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        /* Chat interface */
+        .chat-bubble {
+            animation: fadeIn 0.3s ease;
+            max-width: 80%;
+        }
+        
+        .chat-typing {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .chat-typing span {
+            width: 8px;
+            height: 8px;
+            background: #64748b;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .chat-typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .chat-typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        /* Responsive sidebar */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 50;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Advanced tooltips */
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+        
+        /* Notification styles */
+        .notification-enter {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center gradient-bg">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md transform transition-all hover:scale-105">
+            <div class="text-center mb-8">
+                <div class="brand-logo mx-auto mb-6"></div>
+                <h1 class="text-3xl font-bold text-gray-800">Enterprise TPM Platform</h1>
+                <p class="text-gray-600 mt-2">Level 5 System - Advanced Trade Promotion Management</p>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Microsoft 365 SSO -->
+                <button onclick="loginWithSSO()" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 transform hover:scale-105">
+                    <i class="fab fa-microsoft"></i>
+                    Sign in with Microsoft 365
+                </button>
+                
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">Or continue with email</span>
+                    </div>
+                </div>
+                
+                <!-- Email Login -->
+                <form onsubmit="login(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="loginEmail" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                               placeholder="user@diplomat.co.za">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="loginPassword" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                               placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition transform hover:scale-105">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="text-center text-sm text-gray-600 bg-gray-100 rounded-lg p-3">
+                    <p class="font-semibold mb-1">Demo Credentials:</p>
+                    <p class="font-mono text-xs">john.smith@diplomat.co.za / Demo123!</p>
+                    <p class="text-xs mt-2 text-gray-500">Admin • Key Account Manager • Trade Marketing Manager</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+            <div class="px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="brand-logo ml-4"></div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <!-- Quick Actions -->
+                        <button onclick="showQuickCreate()" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                            <i class="fas fa-plus"></i>
+                            <span>Quick Create</span>
+                        </button>
+                        
+                        <!-- Search -->
+                        <div class="hidden md:block relative">
+                            <input type="text" placeholder="Search..." 
+                                   class="pl-10 pr-4 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                        </div>
+                        
+                        <!-- Insights -->
+                        <button onclick="toggleInsights()" class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg tooltip" data-tooltip="AI Insights">
+                            <i class="fas fa-lightbulb"></i>
+                            <span class="absolute top-0 right-0 h-2 w-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                        </button>
+                        
+                        <!-- Notifications -->
+                        <button onclick="toggleNotifications()" class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg tooltip" data-tooltip="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold">
+                                    <span id="userInitials">JS</span>
+                                </div>
+                                <div class="hidden md:block text-left">
+                                    <p class="text-sm font-medium text-gray-900" id="userName">John Smith</p>
+                                    <p class="text-xs text-gray-500" id="userRole">Administrator</p>
+                                </div>
+                                <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                            </button>
+                            
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200">
+                                <div class="p-3 border-b border-gray-200">
+                                    <p class="text-sm font-medium text-gray-900">Diplomat South Africa</p>
+                                    <p class="text-xs text-gray-500">Level 5 Enterprise</p>
+                                </div>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user-circle mr-2"></i> Profile
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i> Settings
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-keyboard mr-2"></i> Shortcuts
+                                </a>
+                                <hr class="my-1">
+                                <a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-gray-900 text-white overflow-y-auto">
+            <nav class="p-4 space-y-1">
+                <!-- Main Navigation -->
+                <a href="#dashboard" onclick="navigate('dashboard')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-th-large w-5"></i>
+                    <span>Executive Dashboard</span>
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <p class="text-xs uppercase text-gray-500 font-semibold px-3">Trade Promotion</p>
+                </div>
+                
+                <a href="#activity-grid" onclick="navigate('activity-grid')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-calendar-alt w-5"></i>
+                    <span>Activity Grid</span>
+                    <span class="ml-auto text-xs bg-blue-600 px-2 py-0.5 rounded">New</span>
+                </a>
+                
+                <a href="#promotions" onclick="navigate('promotions')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-tags w-5"></i>
+                    <span>Promotions</span>
+                </a>
+                
+                <a href="#pricing" onclick="navigate('pricing')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-dollar-sign w-5"></i>
+                    <span>Pricing & Elasticity</span>
+                </a>
+                
+                <a href="#claims" onclick="navigate('claims')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span>Claims & Settlement</span>
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <p class="text-xs uppercase text-gray-500 font-semibold px-3">Planning</p>
+                </div>
+                
+                <a href="#scenarios" onclick="navigate('scenarios')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-project-diagram w-5"></i>
+                    <span>Scenario Planning</span>
+                </a>
+                
+                <a href="#budgets" onclick="navigate('budgets')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-wallet w-5"></i>
+                    <span>Budget Management</span>
+                </a>
+                
+                <a href="#contracts" onclick="navigate('contracts')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-file-contract w-5"></i>
+                    <span>Contracts</span>
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <p class="text-xs uppercase text-gray-500 font-semibold px-3">Analytics & AI</p>
+                </div>
+                
+                <a href="#analytics" onclick="navigate('analytics')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Advanced Analytics</span>
+                </a>
+                
+                <a href="#ai-models" onclick="navigate('ai-models')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-brain w-5"></i>
+                    <span>AI Models</span>
+                </a>
+                
+                <a href="#insights" onclick="navigate('insights')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-lightbulb w-5"></i>
+                    <span>Insights Hub</span>
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <p class="text-xs uppercase text-gray-500 font-semibold px-3">Master Data</p>
+                </div>
+                
+                <a href="#products" onclick="navigate('products')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-box w-5"></i>
+                    <span>Products</span>
+                </a>
+                
+                <a href="#customers" onclick="navigate('customers')" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-store w-5"></i>
+                    <span>Customers</span>
+                </a>
+            </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800">
+                <div class="flex items-center justify-between text-xs text-gray-400">
+                    <span>v5.0.0</span>
+                    <span>Level 5</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content lg:ml-64 mt-16 p-4 md:p-6 lg:p-8">
+            <div id="content">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+        </main>
+
+        <!-- AI Insights Bot -->
+        <div id="insightsBot" class="fixed bottom-4 right-4 z-50">
+            <button onclick="toggleInsightsBot()" class="bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:shadow-xl transition-all transform hover:scale-110">
+                <i class="fas fa-robot text-xl"></i>
+            </button>
+            
+            <div id="insightsBotWindow" class="hidden absolute bottom-16 right-0 w-96 max-h-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 flex flex-col">
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-xl">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-semibold text-lg">AI Insights Assistant</h3>
+                            <p class="text-xs opacity-90">Powered by Advanced NLP</p>
+                        </div>
+                        <button onclick="toggleInsightsBot()" class="text-white hover:text-gray-200 transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="insightsBotMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                    <div class="chat-bubble bg-white p-3 rounded-lg shadow-sm">
+                        <p class="text-sm text-gray-700">Hello! I'm your AI-powered TPM assistant. I can help you with:</p>
+                        <ul class="text-xs text-gray-600 mt-2 space-y-1">
+                            <li>• Promotion performance analysis</li>
+                            <li>• Price optimization recommendations</li>
+                            <li>• Budget utilization insights</li>
+                            <li>• Scenario planning guidance</li>
+                            <li>• Real-time alerts and opportunities</li>
+                        </ul>
+                        <p class="text-sm text-gray-700 mt-2">What would you like to explore?</p>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
+                    <div class="flex gap-2 mb-2">
+                        <button onclick="askInsightsBot('Show promotion performance')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">
+                            Promotion Performance
+                        </button>
+                        <button onclick="askInsightsBot('Analyze my budget')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">
+                            Budget Analysis
+                        </button>
+                        <button onclick="askInsightsBot('Price recommendations')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">
+                            Pricing
+                        </button>
+                    </div>
+                    <form onsubmit="sendInsightsBotMessage(event)" class="flex gap-2">
+                        <input type="text" id="insightsBotInput" placeholder="Ask me anything about your TPM data..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Create Modal -->
+        <div id="quickCreateModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Create</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="quickCreate('promotion')" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-center">
+                        <i class="fas fa-tags text-2xl text-blue-600 mb-2"></i>
+                        <p class="text-sm font-medium">New Promotion</p>
+                    </button>
+                    <button onclick="quickCreate('claim')" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-center">
+                        <i class="fas fa-file-invoice-dollar text-2xl text-green-600 mb-2"></i>
+                        <p class="text-sm font-medium">Submit Claim</p>
+                    </button>
+                    <button onclick="quickCreate('scenario')" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-center">
+                        <i class="fas fa-project-diagram text-2xl text-purple-600 mb-2"></i>
+                        <p class="text-sm font-medium">New Scenario</p>
+                    </button>
+                    <button onclick="quickCreate('report')" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-center">
+                        <i class="fas fa-chart-bar text-2xl text-orange-600 mb-2"></i>
+                        <p class="text-sm font-medium">Generate Report</p>
+                    </button>
+                </div>
+                <button onclick="closeQuickCreate()" class="mt-4 w-full py-2 text-gray-600 hover:text-gray-900 transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <!-- Insights Panel -->
+        <div id="insightsPanel" class="hidden fixed top-16 right-0 w-96 h-full bg-white shadow-xl border-l border-gray-200 z-40 overflow-y-auto">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Real-time Insights</h3>
+                    <button onclick="toggleInsights()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="insightsList" class="p-4 space-y-3">
+                <!-- Insights will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Notifications Panel -->
+        <div id="notificationsPanel" class="hidden fixed top-16 right-0 w-96 h-full bg-white shadow-xl border-l border-gray-200 z-40 overflow-y-auto">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Notifications</h3>
+                    <button onclick="toggleNotifications()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="notificationsList" class="p-4 space-y-3">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script src="/vantax-level5-app.js"></script>
+</body>
+</html>
